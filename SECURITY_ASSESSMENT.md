@@ -50,12 +50,31 @@ invoke: (channel: string, ...args: any[]) => ipcRenderer.invoke(channel, ...args
 
 **Recommendation:** 
 1. Consider removing this generic invoke handler
-2. If it must remain, implement a whitelist of allowed channels:
+2. If it must remain, implement a whitelist of allowed channels based on the existing IPC handlers:
 
 ```typescript
-const ALLOWED_CHANNELS = ['channel1', 'channel2', ...];
+const ALLOWED_INVOKE_CHANNELS = [
+  'update-content-dimensions',
+  'get-recognition-languages',
+  'take-screenshot',
+  'get-screenshots',
+  'delete-screenshot',
+  'toggle-window',
+  'show-window',
+  'hide-window',
+  'gemini-chat',
+  'gemini-chat-stream',
+  'generate-assist',
+  'generate-what-to-say',
+  'generate-follow-up',
+  'generate-recap',
+  'start-meeting',
+  'end-meeting',
+  // ... add other handlers as needed
+];
+
 invoke: (channel: string, ...args: any[]) => {
-  if (!ALLOWED_CHANNELS.includes(channel)) {
+  if (!ALLOWED_INVOKE_CHANNELS.includes(channel)) {
     throw new Error(`Channel ${channel} is not allowed`);
   }
   return ipcRenderer.invoke(channel, ...args);
