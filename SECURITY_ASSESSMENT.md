@@ -292,6 +292,97 @@ const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || "YOUR_CLIENT_SE
 
 ---
 
+## Third-Party Network Communications
+
+This section documents all external domains and services the application communicates with.
+
+### LLM Providers (Expected)
+
+| Service | Domain | Purpose |
+|---------|--------|---------|
+| Google Gemini | `generativelanguage.googleapis.com` | AI/LLM API |
+| Groq | `api.groq.com` | AI/LLM API |
+| Ollama (Local) | `localhost:11434` | Local AI/LLM (optional) |
+| Google Speech-to-Text | `speech.googleapis.com` | Real-time transcription |
+
+### Google Services (User-Enabled Features)
+
+| Service | Domain | Purpose | User Control |
+|---------|--------|---------|--------------|
+| Google Calendar API | `www.googleapis.com/calendar/v3/...` | Calendar integration | Opt-in, requires explicit login |
+| Google OAuth | `accounts.google.com`, `oauth2.googleapis.com` | Authentication for calendar | Opt-in |
+| Gmail (external link) | `mail.google.com` | Opens browser to compose emails | User-initiated only |
+
+### 🔴 Anonymous Telemetry Endpoint
+
+| Service | Domain | Purpose | Data Sent |
+|---------|--------|---------|-----------|
+| **Cloudflare Worker** | `divine-sun-927d.natively.workers.dev` | Install counter | `app`, `install_id` (random UUID), `version`, `platform` |
+
+**Location:** `electron/services/InstallPingManager.ts:48`
+
+**Description:** The application sends a ONE-TIME ping to a Cloudflare Worker when first installed. According to the code comments, this is explicitly NOT analytics or telemetry, just an install counter.
+
+**Data Sent:**
+```json
+{
+    "app": "natively",
+    "install_id": "<random-uuid>",
+    "version": "1.1.1",
+    "platform": "darwin|win32|linux"
+}
+```
+
+**Privacy Notes:**
+- ✅ One-time only (persisted flag prevents repeat pings)
+- ✅ UUID is randomly generated, not tied to hardware/user
+- ✅ Fails silently, non-blocking
+- ⚠️ IP address visible to the Cloudflare Worker (inherent in HTTP)
+
+**User Control:** None currently. Users cannot disable this without modifying code.
+
+**Recommendation:** Consider adding a user setting to disable the install ping, or document this behavior prominently.
+
+### Static Asset CDN (Audio Test)
+
+| Service | Domain | Purpose |
+|---------|--------|---------|
+| Mixkit | `assets.mixkit.co` | Test audio file for audio settings |
+
+**Location:** `src/components/SettingsOverlay.tsx:1053`
+
+This is loaded only when user clicks "Test" button in audio settings.
+
+### External Links (User-Initiated Only)
+
+These are links that open in the user's browser when clicked, not background communications:
+
+| Domain | Purpose |
+|--------|---------|
+| `github.com/evinjohnn/natively-cluely-ai-assistant` | Source code |
+| `github.com/.../issues` | Bug reports |
+| `buymeacoffee.com/evinjohnn` | Donations |
+| `x.com/evinjohnn` | Social media |
+| `linkedin.com/in/evinjohn` | Social media |
+| `instagram.com/evinjohnn` | Social media |
+| `cloud.google.com` | Documentation link |
+
+---
+
+## Summary of Third-Party Communications
+
+| Category | # of Services | User Consent Required |
+|----------|---------------|----------------------|
+| LLM Providers | 4 | Yes (API key entry) |
+| Google Services | 3 | Yes (OAuth login) |
+| **Telemetry** | **1** | **No** ⚠️ |
+| CDN (Audio Test) | 1 | Yes (user click) |
+| External Links | 7 | Yes (user click) |
+
+**Key Finding:** The only non-LLM, non-user-initiated network communication is the **anonymous install ping** to `divine-sun-927d.natively.workers.dev`. This happens once at first launch without explicit user consent.
+
+---
+
 ## Windows 11-Specific Security Considerations
 
 ### ✅ Properly Handled
