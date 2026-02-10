@@ -345,11 +345,10 @@ These are links that open in the user's browser when clicked, not background com
 |----------|---------------|----------------------|
 | LLM Providers | 4 | Yes (API key entry) |
 | Google Services | 3 | Yes (OAuth login) |
-| **Telemetry** | **1** | **No** ⚠️ |
 | CDN (Audio Test) | 1 | Yes (user click) |
 | External Links | 7 | Yes (user click) |
 
-**Key Finding:** The only non-LLM, non-user-initiated network communication is the **anonymous install ping** to `divine-sun-927d.natively.workers.dev`. This happens once at first launch without explicit user consent.
+**Key Finding:** All network communications require explicit user consent. There is no telemetry or background network activity without user action.
 
 ---
 
