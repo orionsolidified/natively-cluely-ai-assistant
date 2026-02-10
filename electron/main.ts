@@ -1137,11 +1137,6 @@ async function initializeApp() {
 
     CredentialsManager.getInstance().init();
 
-    // Anonymous install ping - one-time, non-blocking
-    // See electron/services/InstallPingManager.ts for privacy details
-    const { sendAnonymousInstallPing } = require('./services/InstallPingManager');
-    sendAnonymousInstallPing();
-
     // Load stored API keys into ProcessingHelper/LLMHelper
     appState.processingHelper.loadStoredCredentials();
 
